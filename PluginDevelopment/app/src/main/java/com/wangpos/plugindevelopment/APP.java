@@ -11,12 +11,13 @@ import dalvik.system.DexClassLoader;
 
 public class APP extends Application {
 
+
     @Override
     public void onCreate() {
         super.onCreate();
 
-        FileUtils fileUtils = new FileUtils();
-
-        DexClassLoader dexClassLoader = fileUtils.loadApk(this,"app-debug.apk");
     }
+
+
+
 }

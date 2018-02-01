@@ -25,9 +25,6 @@ public class ProxyActivity extends Activity {
         super.onCreate(savedInstanceState);
         String className = getIntent().getStringExtra("Class");
 
-        FileUtils fileUtils = new FileUtils();
-
-        DexClassLoader dexClassLoader = fileUtils.loadApk(this,"app-debug.apk");
 
         Class localClass = null;
         try {
@@ -74,6 +71,7 @@ public class ProxyActivity extends Activity {
 
     // 因为插件Activity获得的是宿主的Context，这样就拿不到自己的资源，所以这里要用插件的Resource替换ProxyActivity的Resource！
     private Resources mBundleResources;
+    private DexClassLoader dexClassLoader;
 
     @Override
     protected void attachBaseContext(Context context) {
@@ -83,17 +81,19 @@ public class ProxyActivity extends Activity {
         super.attachBaseContext(context);
     }
 
+
+
     public void replaceContextResources(Context context){
         try {
             Field field = context.getClass().getDeclaredField("mResources");
             field.setAccessible(true);
             if (null == mBundleResources) {
 
-                FileUtils fileUtils = new FileUtils();
-
-                DexClassLoader dexClassLoader = fileUtils.loadApk(context,"app-debug.apk");
-
-                mBundleResources = fileUtils.resources;
+                PluginManager pluginManager = PluginManager.getInstance(context);
+                Plugin plugin = new Plugin("app-debug.apk","2","","learn");
+                pluginManager.loadApk(plugin);
+                mBundleResources = pluginManager.getPluginResources("learn");
+                dexClassLoader = pluginManager.getClassLoader("learn");
             }
             field.set(context, mBundleResources);
         } catch (Exception e) {

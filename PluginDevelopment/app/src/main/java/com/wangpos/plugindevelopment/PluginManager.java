@@ -1,8 +1,11 @@
 package com.wangpos.plugindevelopment;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.util.HashMap;
 
 import dalvik.system.DexClassLoader;
 
@@ -16,6 +19,8 @@ public class PluginManager {
     private String mNativeLibDir;
     private Context mContext;
     private static PluginManager sInstance;
+
+    private HashMap<String,Loader> plugins = new HashMap<>();
 
 
     public static PluginManager getInstance(Context context) {
@@ -31,13 +36,48 @@ public class PluginManager {
 
     private PluginManager(Context context) {
         mContext = context.getApplicationContext();
-        mNativeLibDir = mContext.getDir("pluginlib", Context.MODE_PRIVATE).getAbsolutePath();
+//        mNativeLibDir = mContext.getDir("pluginlib", Context.MODE_PRIVATE).getAbsolutePath();
+
     }
 
-    private DexClassLoader createDexClassLoader(String dexPath) {
-        File dexOutputDir = mContext.getDir("dex", Context.MODE_PRIVATE);
-        dexOutputPath = dexOutputDir.getAbsolutePath();
-        DexClassLoader loader = new DexClassLoader(dexPath, dexOutputPath, mNativeLibDir, mContext.getClassLoader());
-        return loader;
+
+    public void loadApk(Plugin plugin){
+        Loader loader = new Loader();
+
+        /**
+         * 最好开线程
+         */
+        loader.loadApk(mContext,plugin.getFileName());
+        plugins.put(plugin.getKey(),loader);
+
+    }
+
+    public void replaceContextResources(Context context,Resources mResources){
+        try {
+            Field field = context.getClass().getDeclaredField("mResources");
+            field.set(context, mResources);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public HashMap<String, Loader> getPlugins() {
+        return plugins;
+    }
+
+    public DexClassLoader getClassLoader(String key) {
+
+        if (plugins.containsKey(key)){
+            return plugins.get(key).getDexClassLoader();
+        }
+        return null;
+    }
+
+    public Resources getPluginResources(String key) {
+        if (plugins.containsKey(key)){
+            return plugins.get(key).getResources();
+        }
+        return null;
     }
 }
