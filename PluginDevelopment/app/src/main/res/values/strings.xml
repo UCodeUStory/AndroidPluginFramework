@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">PluginDevelopment</string>
+    <string name="title_activity_proxy">ProxyActivity</string>
 </resources>

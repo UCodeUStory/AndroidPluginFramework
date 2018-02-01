@@ -1,10 +1,14 @@
 package com.wangpos.plugindevelopment;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,17 +18,29 @@ import java.lang.reflect.Method;
 
 import dalvik.system.DexClassLoader;
 
-public class LoadApkActivity extends AppCompatActivity {
+public class LoadApkActivity extends AppCompatActivity implements IPlugin{
+
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Log.i("qiyue","LoadApkActivity>>>>>>>>>"+newBase);
+        super.attachBaseContext(newBase);
+    }
 
     TextView tvName;
+    Button startPlugin;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.i("qiyue","savedInstanceState"+savedInstanceState);
+
         setContentView(R.layout.activity_load_apk);
         tvName = (TextView)findViewById(R.id.tvText);
+        startPlugin = (Button) findViewById(R.id.startPlugin);
 
         FileUtils fileUtils = new FileUtils();
-
+//
         DexClassLoader dexClassLoader = fileUtils.loadApk(this,"app-debug.apk");
 
         Class libClazz = null;
@@ -54,8 +70,12 @@ public class LoadApkActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
-
+        startPlugin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startPluginActivity("com.wangpos.pluginapkdemo.WelcomeActivity");
+            }
+        });
 
     }
 
@@ -94,4 +114,10 @@ public class LoadApkActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void startPluginActivity(String ClassName) {
+        Intent intent = new Intent(this, ProxyActivity.class);
+        intent.putExtra("Class", ClassName);
+        this.startActivity(intent);
+    }
 }

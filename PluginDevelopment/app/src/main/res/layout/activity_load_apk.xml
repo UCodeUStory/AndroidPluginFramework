@@ -26,4 +26,11 @@
         android:textSize="15sp"
         android:textColor="#333333"
         android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/startPlugin"
+        android:layout_width="150dp"
+        android:layout_gravity="center_horizontal"
+        android:text="跳转插件界面"
+        android:layout_height="150dp" />
 </LinearLayout>
