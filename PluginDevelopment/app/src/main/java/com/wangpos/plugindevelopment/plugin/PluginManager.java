@@ -1,9 +1,8 @@
-package com.wangpos.plugindevelopment;
+package com.wangpos.plugindevelopment.plugin;
 
 import android.content.Context;
 import android.content.res.Resources;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 

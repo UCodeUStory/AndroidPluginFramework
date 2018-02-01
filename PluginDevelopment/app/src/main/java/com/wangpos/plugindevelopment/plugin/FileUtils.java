@@ -1,4 +1,4 @@
-package com.wangpos.plugindevelopment;
+package com.wangpos.plugindevelopment.plugin;
 
 import android.content.Context;
 import android.content.res.AssetManager;

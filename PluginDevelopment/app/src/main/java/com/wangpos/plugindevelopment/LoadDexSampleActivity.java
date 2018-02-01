@@ -1,26 +1,27 @@
 package com.wangpos.plugindevelopment;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.wangpos.plugindevelopment.plugin.FileUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import dalvik.system.DexClassLoader;
 
+
+
 /**
  * 1.先build插件工程
  * 2.在build编写插件脚本，注意文件路径要修改，否者后面各种报错，坑到你报错NotFound Class.dex
  * 3.执行makeJar
  */
-public class SampleActivity extends AppCompatActivity {
+public class LoadDexSampleActivity extends AppCompatActivity {
 
 
 
@@ -91,7 +92,7 @@ public class SampleActivity extends AppCompatActivity {
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(),LoadApkActivity.class));
+                startActivity(new Intent(getApplicationContext(),LoadApkSampleActivity.class));
             }
         });
 

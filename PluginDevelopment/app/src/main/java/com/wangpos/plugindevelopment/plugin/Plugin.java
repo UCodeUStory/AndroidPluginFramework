@@ -1,4 +1,4 @@
-package com.wangpos.plugindevelopment;
+package com.wangpos.plugindevelopment.plugin;
 
 /**
  * Created by qiyue on 2018/2/1.

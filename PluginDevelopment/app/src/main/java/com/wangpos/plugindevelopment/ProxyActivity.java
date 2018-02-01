@@ -18,86 +18,30 @@ import java.lang.reflect.Method;
 
 import dalvik.system.DexClassLoader;
 
+/**
+ * 每个插件对应一个代理的ProxyActivity,添加第二个插件需要写一个ProxyActivity2 重写对应的proxyModel即可
+ */
 public class ProxyActivity extends Activity {
+    private ProxyModel proxyModel;
+
+    @Override
+    protected void attachBaseContext(Context context) {
+        Log.i("qiyue", "proxyActivity=" + context);
+        proxyModel = new ProxyModel();
+        proxyModel.replaceContextResources(context);
+        super.attachBaseContext(context);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String className = getIntent().getStringExtra("Class");
-
-
-        Class localClass = null;
-        try {
-            localClass = dexClassLoader.loadClass(className);
-            Object instance = localClass.newInstance();
-
-            if (instance!=null){
-                Method setProxy = localClass.getMethod("setProxy",new Class[] { Activity.class });
-                setProxy.setAccessible(true);
-                setProxy.invoke(instance, new Object[] { this });
-
-                // 调用插件的onCreate()
-                Log.i("qiyue","调用插件onCreate"+savedInstanceState);
-                Method onCreate = localClass.getDeclaredMethod("onCreate",
-                        new Class[] { Bundle.class });
-                onCreate.setAccessible(true);
-                onCreate.invoke(instance, new Object[] { null });
-
-            }
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
-
-
-    }
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        /**
-         * 反射调用
-         */
-    }
-
-    // 因为插件Activity获得的是宿主的Context，这样就拿不到自己的资源，所以这里要用插件的Resource替换ProxyActivity的Resource！
-    private Resources mBundleResources;
-    private DexClassLoader dexClassLoader;
-
-    @Override
-    protected void attachBaseContext(Context context) {
-
-        Log.i("qiyue","proxyActivity="+context);
-        replaceContextResources(context);
-        super.attachBaseContext(context);
+        proxyModel.onCreate(this,savedInstanceState,className);
     }
 
 
 
-    public void replaceContextResources(Context context){
-        try {
-            Field field = context.getClass().getDeclaredField("mResources");
-            field.setAccessible(true);
-            if (null == mBundleResources) {
 
-                PluginManager pluginManager = PluginManager.getInstance(context);
-                Plugin plugin = new Plugin("app-debug.apk","2","","learn");
-                pluginManager.loadApk(plugin);
-                mBundleResources = pluginManager.getPluginResources("learn");
-                dexClassLoader = pluginManager.getClassLoader("learn");
-            }
-            field.set(context, mBundleResources);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+
+
 }
