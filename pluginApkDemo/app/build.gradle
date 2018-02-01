@@ -28,7 +28,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 }
 
-
 //删除dynamic.jar包任务 
 task clearJar(type: Delete) {
     delete('libs/dynamic.jar')
