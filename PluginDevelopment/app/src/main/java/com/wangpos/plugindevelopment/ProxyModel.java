@@ -2,6 +2,8 @@ package com.wangpos.plugindevelopment;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,11 +25,36 @@ import dalvik.system.DexClassLoader;
 
 public class ProxyModel {
 
-    private DexClassLoader dexClassLoader;
+
+    private PluginManager pm;
+
+    /**
+     * proxyActivity
+     */
+    private Activity mActivity;
+    /**
+     * 插件主题
+     */
+    private Resources.Theme mTheme;
+
+    /**
+     * 插件Key
+     */
+    private final static String PLUGIN_KEY = "learn";
+
+    public ProxyModel(Activity activity){
+        mActivity = activity;
+        pm = PluginManager.getInstance(activity);
+    }
+
     //notice 通过iProxy接口可以 将公共的操作放到接口里面，从而适配其他类型Activity，否者Activity总变参数也会跟着变，这是简单技巧
     public void onCreate(IProxy iProxy, Bundle savedInstanceState , String className){
+
+        handleActivityInfo();
         Class localClass = null;
         try {
+            DexClassLoader dexClassLoader = pm.getClassLoader(PLUGIN_KEY);
+
             localClass = dexClassLoader.loadClass(className);
             Object instance = localClass.newInstance();
 
@@ -47,6 +74,7 @@ public class ProxyModel {
                 //notice 2.插件再绑定代理，
                 onCreate.invoke(instance, new Object[]{null});
 
+
             }
 
         } catch (ClassNotFoundException e) {
@@ -61,29 +89,64 @@ public class ProxyModel {
             e.printStackTrace();
         }
     }
+//
+//    public Resources replaceContextResources(Context context) {
+//
+//        Resources mBundleResources = null;
+//        try {
+//            Field field = context.getClass().getDeclaredField("mResources");
+//            field.setAccessible(true);
+//            if (null == mBundleResources) {
+//
+//
+//                mBundleResources = pluginManager.getPluginResources(PLUGIN_KEY);
+//                dexClassLoader = pluginManager.getClassLoader(PLUGIN_KEY);
+//
+//            }
+//            field.set(context, mBundleResources);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        return mBundleResources;
+//    }
 
-    public Resources replaceContextResources(Context context) {
 
-        Resources mBundleResources = null;
+
+    private void handleActivityInfo() {
+        ActivityInfo mActivityInfo = pm.getActivityInfo(PLUGIN_KEY);
+
+        if (mActivityInfo.theme > 0) {
+            mActivity.setTheme(mActivityInfo.theme);
+        }
+        Resources.Theme superTheme = mActivity.getTheme();
+
+        mTheme = pm.getPluginResources(PLUGIN_KEY).newTheme();
+
+        mTheme.setTo(superTheme);
+        // Finals适配三星以及部分加载XML出现异常BUG
         try {
-            Field field = context.getClass().getDeclaredField("mResources");
-            field.setAccessible(true);
-            if (null == mBundleResources) {
-
-                //notice 这部分需要按照不同插件做不同配置
-                PluginManager pluginManager = PluginManager.getInstance(context);
-                Plugin plugin = new Plugin("app-debug.apk", "2", "", "learn");
-                pluginManager.loadApk(plugin);
-                mBundleResources = pluginManager.getPluginResources("learn");
-                dexClassLoader = pluginManager.getClassLoader("learn");
-
-            }
-            field.set(context, mBundleResources);
+            mTheme.applyStyle(mActivityInfo.theme, true);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return mBundleResources;
+        // TODO: handle mActivityInfo.launchMode here in the future.
     }
 
+    public AssetManager getAssets() {
+        return pm.getAssets(PLUGIN_KEY);
+    }
+
+    public Resources getResources() {
+        return pm.getPluginResources(PLUGIN_KEY);
+    }
+
+    public Resources.Theme getTheme() {
+        return mTheme;
+    }
+
+    public ClassLoader getClassLoader() {
+        return pm.getClassLoader(PLUGIN_KEY);
+    }
 }

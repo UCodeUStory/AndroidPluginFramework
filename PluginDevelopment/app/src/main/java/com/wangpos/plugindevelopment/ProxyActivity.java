@@ -3,6 +3,7 @@ package com.wangpos.plugindevelopment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -39,8 +40,8 @@ public class ProxyActivity extends Activity implements IProxy{
     @Override
     protected void attachBaseContext(Context context) {
         Log.i("qiyue", "proxyActivity=" + context);
-        mProxyModel = new ProxyModel();
-        mProxyModel.replaceContextResources(context);
+        mProxyModel = new ProxyModel(this);
+//        mProxyModel.replaceContextResources(context);
         super.attachBaseContext(context);
     }
 
@@ -49,6 +50,27 @@ public class ProxyActivity extends Activity implements IProxy{
         super.onCreate(savedInstanceState);
         String className = getIntent().getStringExtra("Class");
         mProxyModel.onCreate(this,savedInstanceState,className);
+    }
+
+
+    @Override
+    public AssetManager getAssets() {
+        return mProxyModel.getAssets() == null ? super.getAssets() : mProxyModel.getAssets();
+    }
+
+    @Override
+    public Resources getResources() {
+        return mProxyModel.getResources() == null ? super.getResources() : mProxyModel.getResources();
+    }
+
+    @Override
+    public Resources.Theme getTheme() {
+        return mProxyModel.getTheme() == null ? super.getTheme() : mProxyModel.getTheme();
+    }
+
+    @Override
+    public ClassLoader getClassLoader() {
+        return mProxyModel.getClassLoader();
     }
 
     @Override

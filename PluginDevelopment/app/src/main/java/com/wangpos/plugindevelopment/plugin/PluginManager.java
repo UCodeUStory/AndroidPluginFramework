@@ -1,6 +1,8 @@
 package com.wangpos.plugindevelopment.plugin;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.res.AssetManager;
 import android.content.res.Resources;
 
 import java.lang.reflect.Field;
@@ -78,5 +80,22 @@ public class PluginManager {
             return plugins.get(key).getResources();
         }
         return null;
+    }
+
+    public AssetManager getAssets(String key) {
+        if (plugins.containsKey(key)){
+            return plugins.get(key).getAssets();
+        }
+        return null;
+    }
+
+
+
+    public ActivityInfo getActivityInfo(String key) {
+        if (plugins.containsKey(key)){
+            return plugins.get(key).getActivityInfo();
+        }
+        return null;
+
     }
 }

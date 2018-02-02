@@ -11,6 +11,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.wangpos.plugindevelopment.plugin.FileUtils;
+import com.wangpos.plugindevelopment.plugin.Plugin;
+import com.wangpos.plugindevelopment.plugin.PluginManager;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -38,37 +40,45 @@ public class LoadApkSampleActivity extends AppCompatActivity {
         setContentView(R.layout.activity_load_apk);
         tvName = (TextView)findViewById(R.id.tvText);
         startPlugin = (Button) findViewById(R.id.startPlugin);
-
-        FileUtils fileUtils = new FileUtils();
 //
-        DexClassLoader dexClassLoader = fileUtils.loadApk(this,"app-debug.apk");
+//        FileUtils fileUtils = new FileUtils();
+////
+//        DexClassLoader dexClassLoader = fileUtils.loadApk(this,"app-debug.apk");
+//
+//        Class libClazz = null;
+//        try {
+//            libClazz = dexClassLoader.loadClass("com.wangpos.pluginapkdemo.Utils");
+//            Object dynamic = libClazz.newInstance();
+//
+//            if (dynamic!=null){
+//                Method method = libClazz.getDeclaredMethod("getPluginVersion");
+//
+//                String textStr = (String)method.invoke(dynamic);
+//                Toast.makeText(this,"apk插件加载成功"+textStr,Toast.LENGTH_SHORT).show();
+//
+//                String str = fileUtils.resources.getString(fileUtils.resources.getIdentifier("app_name", "string", "com.wangpos.pluginapkdemo"));
+//                tvName.setText("插件名字"+str);
+//            }
+//
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        } catch (InstantiationException e) {
+//            e.printStackTrace();
+//        } catch (NoSuchMethodException e) {
+//            e.printStackTrace();
+//        } catch (InvocationTargetException e) {
+//            e.printStackTrace();
+//        }
 
-        Class libClazz = null;
-        try {
-            libClazz = dexClassLoader.loadClass("com.wangpos.pluginapkdemo.Utils");
-            Object dynamic = libClazz.newInstance();
 
-            if (dynamic!=null){
-                Method method = libClazz.getDeclaredMethod("getPluginVersion");
 
-                String textStr = (String)method.invoke(dynamic);
-                Toast.makeText(this,"apk插件加载成功"+textStr,Toast.LENGTH_SHORT).show();
 
-                String str = fileUtils.resources.getString(fileUtils.resources.getIdentifier("app_name", "string", "com.wangpos.pluginapkdemo"));
-                tvName.setText("插件名字"+str);
-            }
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
+        //notice 这部分需要按照不同插件做不同配置
+        PluginManager pluginManager = PluginManager.getInstance(this);
+        Plugin plugin = new Plugin("app-debug.apk", "2", "", "learn");
+        pluginManager.loadApk(plugin);
 
         startPlugin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,7 +86,6 @@ public class LoadApkSampleActivity extends AppCompatActivity {
                 startPluginActivity("com.wangpos.pluginapkdemo.WelcomeActivity");
             }
         });
-
     }
 
 
