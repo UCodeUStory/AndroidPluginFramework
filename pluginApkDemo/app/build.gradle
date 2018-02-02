@@ -12,8 +12,17 @@ android {
     }
     buildTypes {
         release {
+            buildConfigField "boolean", "isInternal", "true"
             minifyEnabled false
         }
+
+        debug{
+            buildConfigField "boolean", "isInternal", "false"
+            minifyEnabled false
+        }
+
+
+
     }
 }
 
