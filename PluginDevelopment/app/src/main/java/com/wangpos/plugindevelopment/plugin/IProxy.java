@@ -1,5 +1,7 @@
 package com.wangpos.plugindevelopment.plugin;
 
+import com.wangpos.inter.IPlugin;
+
 import dalvik.system.DexClassLoader;
 
 /**
@@ -7,5 +9,5 @@ import dalvik.system.DexClassLoader;
  */
 
 public interface IProxy {
-    void setDexClassLoader(DexClassLoader dexClassLoader);
+    public void attach(IPlugin pluginActivity);
 }

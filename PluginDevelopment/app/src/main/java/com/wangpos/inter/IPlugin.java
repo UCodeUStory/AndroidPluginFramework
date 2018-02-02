@@ -1,4 +1,4 @@
-package com.wangpos.plugindevelopment.plugin;
+package com.wangpos.inter;
 
 import android.app.Activity;
 import android.content.Context;

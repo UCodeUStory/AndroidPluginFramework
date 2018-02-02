@@ -2,6 +2,7 @@ package com.wangpos.plugindevelopment;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -9,8 +10,16 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Toast;
+
+import com.wangpos.inter.IPlugin;
+import com.wangpos.plugindevelopment.plugin.IProxy;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -21,14 +30,17 @@ import dalvik.system.DexClassLoader;
 /**
  * 每个插件对应一个代理的ProxyActivity,添加第二个插件需要写一个ProxyActivity2 重写对应的proxyModel即可
  */
-public class ProxyActivity extends Activity {
-    private ProxyModel proxyModel;
+public class ProxyActivity extends Activity implements IProxy{
+
+    private ProxyModel mProxyModel;
+
+    protected IPlugin mPluginActivity;
 
     @Override
     protected void attachBaseContext(Context context) {
         Log.i("qiyue", "proxyActivity=" + context);
-        proxyModel = new ProxyModel();
-        proxyModel.replaceContextResources(context);
+        mProxyModel = new ProxyModel();
+        mProxyModel.replaceContextResources(context);
         super.attachBaseContext(context);
     }
 
@@ -36,12 +48,107 @@ public class ProxyActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String className = getIntent().getStringExtra("Class");
-        proxyModel.onCreate(this,savedInstanceState,className);
+        mProxyModel.onCreate(this,savedInstanceState,className);
     }
 
+    @Override
+    public void attach(IPlugin pluginActivity) {
+        mPluginActivity = pluginActivity;
+    }
 
+    @Override
+    protected void onStart() {
+        mPluginActivity.onStart();
+        super.onStart();
+    }
 
+    @Override
+    protected void onRestart() {
+        mPluginActivity.onRestart();
+        super.onRestart();
+    }
 
+    @Override
+    protected void onResume() {
+        mPluginActivity.onResume();
+        super.onResume();
+    }
 
+    @Override
+    protected void onPause() {
+        mPluginActivity.onPause();
+        super.onPause();
+    }
 
+    @Override
+    protected void onStop() {
+        mPluginActivity.onStop();
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mPluginActivity.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        mPluginActivity.onSaveInstanceState(outState);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        mPluginActivity.onRestoreInstanceState(savedInstanceState);
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        mPluginActivity.onNewIntent(intent);
+        super.onNewIntent(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        mPluginActivity.onBackPressed();
+        super.onBackPressed();
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        super.onTouchEvent(event);
+        return mPluginActivity.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        super.onKeyUp(keyCode, event);
+        return mPluginActivity.onKeyUp(keyCode, event);
+    }
+
+    @Override
+    public void onWindowAttributesChanged(WindowManager.LayoutParams params) {
+        mPluginActivity.onWindowAttributesChanged(params);
+        super.onWindowAttributesChanged(params);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        mPluginActivity.onWindowFocusChanged(hasFocus);
+        super.onWindowFocusChanged(hasFocus);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        mPluginActivity.onCreateOptionsMenu(menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        mPluginActivity.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item);
+    }
 }

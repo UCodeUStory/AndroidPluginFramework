@@ -6,6 +6,8 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.wangpos.inter.IPlugin;
+import com.wangpos.plugindevelopment.plugin.IProxy;
 import com.wangpos.plugindevelopment.plugin.Plugin;
 import com.wangpos.plugindevelopment.plugin.PluginManager;
 
@@ -22,23 +24,27 @@ import dalvik.system.DexClassLoader;
 public class ProxyModel {
 
     private DexClassLoader dexClassLoader;
-
-    public void onCreate(Activity activity,Bundle savedInstanceState ,String className){
+    //notice 通过iProxy接口可以 将公共的操作放到接口里面，从而适配其他类型Activity，否者Activity总变参数也会跟着变，这是简单技巧
+    public void onCreate(IProxy iProxy, Bundle savedInstanceState , String className){
         Class localClass = null;
         try {
             localClass = dexClassLoader.loadClass(className);
             Object instance = localClass.newInstance();
 
             if (instance != null) {
-                Method setProxy = localClass.getMethod("setProxy", new Class[]{Activity.class});
+                Method setProxy = localClass.getMethod("attach", new Class[]{Activity.class});
                 setProxy.setAccessible(true);
-                setProxy.invoke(instance, new Object[]{activity});
+                setProxy.invoke(instance, new Object[]{iProxy});
 
-                // 调用插件的onCreate()
+                //notice 开始调用插件的onCreate() 建立绑定关系，Proxy和Plugin互相引用
                 Log.i("qiyue", "调用插件onCreate" + savedInstanceState);
                 Method onCreate = localClass.getDeclaredMethod("onCreate",
                         new Class[]{Bundle.class});
+
+                //notice 1.先绑定插件，因为下面执行完onCreate后插件的其他方法也会被回调
+                iProxy.attach((IPlugin)instance);
                 onCreate.setAccessible(true);
+                //notice 2.插件再绑定代理，
                 onCreate.invoke(instance, new Object[]{null});
 
             }
@@ -64,6 +70,7 @@ public class ProxyModel {
             field.setAccessible(true);
             if (null == mBundleResources) {
 
+                //notice 这部分需要按照不同插件做不同配置
                 PluginManager pluginManager = PluginManager.getInstance(context);
                 Plugin plugin = new Plugin("app-debug.apk", "2", "", "learn");
                 pluginManager.loadApk(plugin);
