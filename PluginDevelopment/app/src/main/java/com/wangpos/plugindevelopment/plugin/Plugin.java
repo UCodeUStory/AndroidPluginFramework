@@ -37,11 +37,11 @@ public class Plugin {
         this.key = key;
     }
 
-    public Plugin(String fileName, String version, String path, String key) {
+    public Plugin(String fileName, String version, String path, String pluginName) {
         FileName = fileName;
         this.version = version;
         this.path = path;
-        this.key = key;
+        this.key = pluginName;
     }
 
     private String FileName;

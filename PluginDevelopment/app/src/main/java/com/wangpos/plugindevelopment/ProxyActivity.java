@@ -49,7 +49,8 @@ public class ProxyActivity extends Activity implements IProxy{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String className = getIntent().getStringExtra("Class");
-        mProxyModel.onCreate(this,savedInstanceState,className);
+        String pluginName = getIntent().getStringExtra("pluginName");
+        mProxyModel.onCreate(this,savedInstanceState,pluginName,className);
     }
 
 

@@ -40,7 +40,7 @@ public class ProxyModel {
     /**
      * 插件Key
      */
-    private final static String PLUGIN_KEY = "learn";
+    private String PLUGIN_KEY;
 
     public ProxyModel(Activity activity){
         mActivity = activity;
@@ -48,7 +48,9 @@ public class ProxyModel {
     }
 
     //notice 通过iProxy接口可以 将公共的操作放到接口里面，从而适配其他类型Activity，否者Activity总变参数也会跟着变，这是简单技巧
-    public void onCreate(IProxy iProxy, Bundle savedInstanceState , String className){
+    public void onCreate(IProxy iProxy, Bundle savedInstanceState , String pluginName,String className){
+
+        PLUGIN_KEY = pluginName;
 
         handleActivityInfo();
         Class localClass = null;
@@ -89,28 +91,6 @@ public class ProxyModel {
             e.printStackTrace();
         }
     }
-//
-//    public Resources replaceContextResources(Context context) {
-//
-//        Resources mBundleResources = null;
-//        try {
-//            Field field = context.getClass().getDeclaredField("mResources");
-//            field.setAccessible(true);
-//            if (null == mBundleResources) {
-//
-//
-//                mBundleResources = pluginManager.getPluginResources(PLUGIN_KEY);
-//                dexClassLoader = pluginManager.getClassLoader(PLUGIN_KEY);
-//
-//            }
-//            field.set(context, mBundleResources);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        return mBundleResources;
-//    }
-
 
 
     private void handleActivityInfo() {

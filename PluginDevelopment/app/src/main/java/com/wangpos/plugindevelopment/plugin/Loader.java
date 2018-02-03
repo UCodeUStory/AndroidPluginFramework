@@ -107,6 +107,11 @@ public class Loader {
 
 
     private void initializeActivityInfo() {
+
+        for (ActivityInfo activityInfo : packageInfo.activities) {
+            Log.i("qiyue","activity"+activityInfo.toString());
+        }
+
         if ((packageInfo.activities != null) && (packageInfo.activities.length > 0)) {
             if (mClass == null) {
                 mClass = packageInfo.activities[0].name;
