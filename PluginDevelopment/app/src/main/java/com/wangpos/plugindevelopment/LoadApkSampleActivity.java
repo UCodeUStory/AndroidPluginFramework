@@ -44,7 +44,6 @@ public class LoadApkSampleActivity extends AppCompatActivity {
 
 
 
-
         startPlugin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -52,7 +51,6 @@ public class LoadApkSampleActivity extends AppCompatActivity {
             }
         });
     }
-
 
 
     public void startPluginActivity(String pluginName,String ClassName) {
